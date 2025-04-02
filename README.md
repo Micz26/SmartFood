@@ -49,3 +49,26 @@
 ### Backend development
 
 Add needed dependencies (libraries) to dependencies in backend/pyproject.toml dependencies and run `python -m pip install -e .` again
+
+1.  
+    ```
+    git checkout -b dev
+    ```
+
+2.  
+    ```
+    git fetch
+    ```
+
+3.  
+    ```
+    git pull origin dev
+    ```
+
+4.  
+    ```
+    git checkout -b your_feature_branch
+    ```
+Now you can work on yor feeature branch, if you finish push changes to github and create pull request to base; `dev`
+
+
