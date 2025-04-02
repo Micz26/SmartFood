@@ -1,0 +1,49 @@
+
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "smart_food"
+version = "0.0.1"
+description = "Codebase forSmartFood"
+requires-python = ">=3.10,<3.12"
+dependencies = [
+    "fastapi==0.112.2"
+]
+
+
+[project.urls]
+"Source" = "https://github.com/Micz26/SmartFood"
+
+[tool.setuptools]
+packages = { find = { where = ["src"] } }
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "I", # isort
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+    # "UP",  # pyupgrade
+]
+line-length = 120
+ignore = [
+    # "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+    "W191", # indentation contains tabs
+]
+extend-exclude = [".venv/", "build/", "dist/", "docs/"]
+
+[tool.ruff.format]
+quote-style = "single"
+indent-style = "space"
+
+[tool.ruff.lint.isort]
+order-by-type = true
+lines-between-types = 1
+combine-as-imports = true
+# known_first_party = "common"
