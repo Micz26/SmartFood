@@ -2,15 +2,21 @@
 
 ## Installation
 
+1.  Clone repository
+
+    ```
+    git clone https://github.com/Micz26/SmartFood.git
+    ```
+
 ### Backend installation steps
 
-0.  Go to backend/
+2.  Go to backend/
 
     ```
     cd backend/
     ```
 
-1.  Create new virtual environment:
+3.  Create new virtual environment:
 
     If you use _conda_
 
@@ -20,19 +26,19 @@
 
     Alternatively use any other virtual enviroment manager of your choice.
 
-2.  Activate environment
+4.  Activate environment
 
     ```
     conda activate smart_food
     ```
 
-3.  Make sure you use recent _pip_ version
+5.  Make sure you use recent _pip_ version
 
     ```
     python -m pip install --upgrade pip
     ```
 
-4.  Install packages
+6.  Install packages
 
     ```
     python -m pip install -e .
