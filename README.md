@@ -50,39 +50,34 @@
 
 Add needed dependencies (libraries) to dependencies in backend/pyproject.toml dependencies and run `python -m pip install -e .` again
 
-1.  
-    ```
+1.  ```
     git checkout -b dev
     ```
 
-2.  
-    ```
+2.  ```
     git fetch
     ```
 
-3.  
-    ```
+3.  ```
     git pull origin dev
     ```
 
-4.  
-    ```
-    git checkout -b your_feature_branch
-    ```
-Now you can work on yor feeature branch, if you finish push changes to github and create pull request to base; `dev`
-
+4.      ```
+        git checkout -b your_feature_branch
+        ```
+    Now you can work on yor feeature branch, if you finish push changes to github and create pull request to base; `dev`
 
 ## App Running
 
 ### Run Backend
 
-1.  
-    ```
+1.  ```
     cd backend
     ```
 
-2.  
-    ```
+2.  ```
     python src/smart_food/serve.py
     ```
 
+docker build -t smart-food-backend .
+docker run -p 8000:8000 smart-food-backend
