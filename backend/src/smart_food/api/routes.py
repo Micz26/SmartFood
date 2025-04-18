@@ -1,10 +1,11 @@
-from fastapi import APIRouter, Form
+from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 import uvicorn
 from pydantic import BaseModel
 
 from smart_food.barcode_scanner import scanner
 from smart_food.db.db_scripts import init_db, add_product_to_fridge, read_fridge
+from smart_food.recipe_recommendation.response import dict_to_response
 
 router = APIRouter()
 
@@ -37,7 +38,10 @@ async def get_fridge_products():
 
 @router.get('/recipes/recommend')
 async def recommend_recipes():
-    return {'recommended_recipes': ['Makaron z serem', 'Pizza', 'Sałatka z tuńczykiem', 'Zupa pomidorowa']}
+    init_db()
+    products = read_fridge()
+    recipies = dict_to_response(products)
+    return {'recipies': recipies}
 
 
 if __name__ == '__main__':

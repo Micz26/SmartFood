@@ -11,7 +11,9 @@ requires-python = ">=3.10,<3.12"
 dependencies = [
     "fastapi==0.112.2",
     "uvicorn[standard]==0.29.0",
-    "requests"
+    "requests",
+    "openai",
+    "python-dotenv"
 ]
 
 [project.urls]
