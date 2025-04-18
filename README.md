@@ -72,3 +72,17 @@ Add needed dependencies (libraries) to dependencies in backend/pyproject.toml de
 Now you can work on yor feeature branch, if you finish push changes to github and create pull request to base; `dev`
 
 
+## App Running
+
+### Run Backend
+
+1.  
+    ```
+    cd backend
+    ```
+
+2.  
+    ```
+    python src/smart_food/serve.py
+    ```
+
