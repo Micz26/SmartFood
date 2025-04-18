@@ -1,19 +1,14 @@
-from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import JSONResponse
-import random
+from fastapi import APIRouter
+from fastapi import FastAPI
 import uvicorn
 
+from smart_food.api import router
+
+
 app = FastAPI()
+app.include_router(router)
 
-
-@app.post('/fridge/add')
-async def add_to_fridge(file: UploadFile = File(...)):
-    return {'message': 'Added product to fridge'}
-
-
-@app.get('/recipes/recommend')
-async def recommend_recipes():
-    return {'recommended_recipes': ['Makaron z serem', 'Pizza']}
+router = APIRouter()
 
 
 if __name__ == '__main__':
