@@ -29,7 +29,6 @@ def add_product_to_fridge(ean, product_info):
     brand = product_info.get('brand', 'Unknown')
     ingredients = product_info.get('ingredients', '')
 
-    # 🟡 Zmieniamy dict na JSON string
     nutriments_dict = product_info.get('nutrition', {})
     nutriments_json = json.dumps(nutriments_dict)
 
@@ -67,3 +66,34 @@ def read_fridge():
         }
         for row in rows
     ]
+
+
+def delete_product_from_fridge(ean: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute('DELETE FROM fridge_products WHERE ean = ?', (ean,))
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def get_product_from_fridge(ean: str):
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT name, brand, ingredients, nutriments, ean FROM fridge_products WHERE ean = ?', (ean,))
+    row = cursor.fetchone()
+    conn.close()
+
+    if row:
+        return {
+            'name': row[0],
+            'brand': row[1],
+            'ingredients': row[2],
+            'nutriments': json.loads(row[3]) if row[3] else {},
+            'ean': row[4],
+        }
+    else:
+        return None

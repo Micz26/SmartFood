@@ -1,17 +1,19 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 import uvicorn
-from pydantic import BaseModel
 
 from smart_food.barcode_scanner import scanner
-from smart_food.db.db_scripts import init_db, add_product_to_fridge, read_fridge
+from smart_food.db.db_scripts import (
+    init_db,
+    add_product_to_fridge,
+    read_fridge,
+    delete_product_from_fridge,
+    get_product_from_fridge,
+)
 from smart_food.recipe_recommendation.response import dict_to_response
+from smart_food.api.models import BarcodeRequest, NutritionInput
 
 router = APIRouter()
-
-
-class BarcodeRequest(BaseModel):
-    ean: str
 
 
 @router.post('/fridge/scan-barcode')
@@ -36,11 +38,36 @@ async def get_fridge_products():
     return {'fridge_products': products}
 
 
-@router.get('/recipes/recommend')
-async def recommend_recipes():
+@router.post('/fridge/product_info')
+async def get_product_info(payload: BarcodeRequest):
+    init_db()
+    ean = payload.ean
+
+    product = get_product_from_fridge(ean)
+    if not product:
+        raise HTTPException(status_code=404, detail='Product not found')
+
+    return product
+
+
+@router.delete('/fridge/delete_product')
+async def delete_product(payload: BarcodeRequest):
+    init_db()
+    ean = payload.ean
+
+    product = get_product_from_fridge(ean)
+    if not product:
+        raise HTTPException(status_code=404, detail='Product doesnt exist in database')
+
+    delete_product_from_fridge(ean)
+    return {'message': f'Product with EAN {ean} has been deleted'}
+
+
+@router.post('/recipes/recommend')
+async def recommend_recipes(data: NutritionInput):
     init_db()
     products = read_fridge()
-    recipies = dict_to_response(products)
+    recipies = dict_to_response(products, data)
     return {'recipies': recipies}
 
 

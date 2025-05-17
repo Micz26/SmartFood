@@ -13,7 +13,9 @@ dependencies = [
     "uvicorn[standard]==0.29.0",
     "requests",
     "openai",
-    "python-dotenv"
+    "python-dotenv",
+    "langchain",
+    "langchain_openai"
 ]
 
 [project.urls]

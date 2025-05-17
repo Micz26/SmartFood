@@ -1,30 +1,50 @@
-import openai
 import logging
+
+from pydantic import BaseModel
+from langchain_openai import ChatOpenAI
+
 from smart_food.recipe_recommendation.config import API_KEY
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-openai.api_key = API_KEY
+llm = ChatOpenAI(model='gpt-4o-mini', api_key=API_KEY, temperature=0.3, max_tokens=5000)
+
+
+class RecipeRecommendation(BaseModel):
+    name: str
+    ingredients: list[str]
+    steps: list[str]
+    calories: int
+    protein: int
+    carbo: int
+    fats: int
+
+
+class RecipeRecommendations(BaseModel):
+    recipes: list[RecipeRecommendation]
+
+
+structured_llm = llm.with_structured_output(RecipeRecommendations)
 
 
 def format_food_dict(food_dict):
     return '\n'.join(
-        f'{food}: {vals[1]:.1f}g - {vals[0]} kcal, Protein: {vals[2]}g, Fat: {vals[3]}g, Carbs: {vals[4]}g'
+        f'{food}: {vals[1]:.1f}g - {vals[0]} kcal, Białko: {vals[2]}g, Tłuszcz: {vals[3]}g, Węglowodany: {vals[4]}g'
         for food, vals in food_dict.items()
     )
 
 
-def dict_to_response(list_of_dicts):
+def dict_to_response(list_of_dicts, nutrition_input):
     food_data = {}
 
     for dictionary in list_of_dicts:
-        name = dictionary.get('name', 'Unknown Product')
+        name = dictionary.get('name', 'Nieznany produkt')
         nutr = dictionary.get('nutriments', {})
 
         try:
             energy_kcal = nutr.get('energy-kcal', 0)
-            energy_kcal_100g = nutr.get('energy-kcal_100g', 100) or 100  # zapobiega dzieleniu przez 0
+            energy_kcal_100g = nutr.get('energy-kcal_100g', 100) or 100
             weight = energy_kcal / energy_kcal_100g * 100
             proteins = nutr.get('proteins', 0)
             fat = nutr.get('fat', 0)
@@ -33,20 +53,27 @@ def dict_to_response(list_of_dicts):
             food_data[name] = [energy_kcal, weight, proteins, fat, carbs]
 
         except Exception as e:
-            logger.warning(f"Error parsing product '{name}': {e}")
+            logger.warning(f"Błąd przetwarzania produktu '{name}': {e}")
             continue
 
     prompt = f"""
-    I have the following ingredients available with their nutritional info:
+    Mam następujące składniki dostępne wraz z ich wartością odżywczą:
 
     {format_food_dict(food_data)}
 
-    Can you suggest a healthy recipe using these ingredients (not necessarily the 
-    whole amount available and not necessarily every product)? Include instructions and 
-    optionally a name for the recipe. Try to use mostly what’s available.
-    Start with the name of the recipe, followed by ingredients and so on. 
+    Użytkownik chce przygotować posiłek o orientacyjnej wartości odżywczej:
+    - {nutrition_input.calories} kcal
+    - {nutrition_input.protein} g białka
+    - {nutrition_input.carbo} g węglowodanów
+    - {nutrition_input.fats} g tłuszczów
+
+    Zaproponuj jeden lub więcej zdrowych przepisów z wykorzystaniem tych składników 
+    (niekoniecznie wszystkich ani w całości)
+
+    Staraj się możliwie jak najlepiej dopasować do wskazanych wartości odżywczych. 
+    Odpowiedź sformułuj w języku polskim.
     """
 
-    response = openai.chat.completions.create(model='gpt-4', messages=[{'role': 'user', 'content': prompt}])
+    response = structured_llm.invoke(prompt)
 
-    return str(response.choices[0].message.content)
+    return response
