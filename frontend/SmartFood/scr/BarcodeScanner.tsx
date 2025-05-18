@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { CameraView } from 'expo-camera';
+import { Camera, CameraView } from 'expo-camera';
 import axios from 'axios';
 
 const BarcodeScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
@@ -8,6 +8,21 @@ const BarcodeScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
     const [cameraActive, setCameraActive] = useState(true); // Control camera visibility
     const cameraRef = useRef<any>(null); // Reference to the camera
     const [focusPoint, setFocusPoint] = useState<{ x: number; y: number } | null>(null);
+    const [hasPermission, setHasPermission] = useState<boolean | null>(null); // Camera permission state
+
+    useEffect(() => {
+        (async () => {
+        const { status } = await Camera.requestCameraPermissionsAsync();
+        setHasPermission(status === 'granted');
+        })();
+    }, []);
+
+    if (hasPermission === null) {
+        return <Text>Requesting camera permission...</Text>;
+    }
+    if (hasPermission === false) {
+        return <Text>No access to camera</Text>;
+    }
 
     const handleBarcodeScanned = async ({ type, data }: any) => {
         if (!scanned) {
@@ -18,7 +33,7 @@ const BarcodeScanner: React.FC<{ navigation: any }> = ({ navigation }) => {
             // Send the scanned EAN to the backend
             try {
                 console.log('Sending barcode data to backend:', data);
-                const response = await axios.post('http://172.20.10.4:8000/fridge/scan-barcode', {
+                const response = await axios.post('http://172.20.10.2:8000/fridge/scan-barcode', {
                     ean: data, // Sending the scanned barcode ean
                 });
                 console.log('Success:', response.data);
