@@ -30,7 +30,7 @@ structured_llm = llm.with_structured_output(RecipeRecommendations)
 
 def format_food_dict(food_dict):
     return '\n'.join(
-        f'{food}: {vals[1]:.1f}g - {vals[0]} kcal, Białko: {vals[2]}g, Tłuszcz: {vals[3]}g, Węglowodany: {vals[4]}g'
+        f'{food}: {vals[1]:.1f}g - {vals[0]} kcal, Białko: {vals[2]}g, Tłuszcz: {vals[3]}g, Węglowodany: {vals[4]}g, Sól: {vals[5]}g, Stopień przetworzenia: {vals[6]}g'
         for food, vals in food_dict.items()
     )
 
@@ -49,8 +49,10 @@ def dict_to_response(list_of_dicts, nutrition_input):
             proteins = nutr.get('proteins', 0)
             fat = nutr.get('fat', 0)
             carbs = nutr.get('carbohydrates', 0)
+            sodium = nutr.get('sodium', 0)
+            nova_score = nutr.get('nova-group', 0)
 
-            food_data[name] = [energy_kcal, weight, proteins, fat, carbs]
+            food_data[name] = [energy_kcal, weight, proteins, fat, carbs, sodium, nova_score]
 
         except Exception as e:
             logger.warning(f"Błąd przetwarzania produktu '{name}': {e}")
@@ -69,6 +71,12 @@ def dict_to_response(list_of_dicts, nutrition_input):
 
     Zaproponuj jeden lub więcej zdrowych przepisów z wykorzystaniem tych składników 
     (niekoniecznie wszystkich ani w całości)
+
+    Ograniczenia dietetyczne („zdrowy posiłek”):
+        Przepis uznaje się za zdrowy, jeśli spełnia następujące kryteria:
+            1.Zawiera co najmniej jeden składnik o wysokiej wartości odżywczej (np. warzywa, rośliny strączkowe, produkty pełnoziarniste).
+            2.Nie zawiera składników wysokoprzetworzonych lub o wysokiej zawartości nasyconych kwasów tłuszczowych i sodu.
+
 
     Staraj się możliwie jak najlepiej dopasować do wskazanych wartości odżywczych. 
     Odpowiedź sformułuj w języku polskim.
