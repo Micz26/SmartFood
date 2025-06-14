@@ -8,7 +8,7 @@ from smart_food.recipe_recommendation.config import API_KEY
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-llm = ChatOpenAI(model='gpt-4o-mini', api_key=API_KEY, temperature=0.3, max_tokens=5000)
+llm = ChatOpenAI(model='gpt-4o-mini', api_key=API_KEY, temperature=0.6, max_tokens=8000)
 
 
 class RecipeRecommendation(BaseModel):
