@@ -11,7 +11,7 @@ const Recommendations: React.FC<RecommendationsProps> = ({ visible, onClose, rec
     return (
         <Modal visible={visible} animationType="slide">
             <View style={styles.modalContainer}>
-                <Text style={{ fontSize: 24, marginBottom: 20 }}>Recommendacje</Text>
+                <Text style={{ fontSize: 24, marginBottom: 20 }}>Rekomendacje</Text>
                 <ScrollView>
                     {/* Render the recommendations string directly */}
                     <Text style={styles.recipeText}>{recommendations}</Text> {/* Render the entire string */}
